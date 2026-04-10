@@ -58,6 +58,4 @@ if uploaded_file is not None:
         st.subheader("🧠 Penjelasan")
         st.write(narrative)
 
-
-
     os.remove(temp_path)
