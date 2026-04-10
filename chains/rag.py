@@ -1,9 +1,9 @@
 import json
 import os
 from langchain_openai import ChatOpenAI
-from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
+from langchain_core.prompts import PromptTemplate
 
+# 1. Inisialisasi LLM
 llm = ChatOpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=os.getenv("OPENROUTER_API_KEY"),
@@ -17,6 +17,7 @@ def retrieve_disease_info(disease_name):
         data = json.load(f)
     return data.get(disease_name)
 
+# 2. Setup Prompt Template
 prompt_template = PromptTemplate(
     input_variables=["disease_name", "penyebab", "gejala", "penanganan", "pencegahan"],
     template="""
@@ -44,17 +45,21 @@ Jika penyakit adalah sehat, jelaskan bahwa daun dalam kondisi sehat.
 """
 )
 
-chain = LLMChain(llm=llm, prompt=prompt_template)
+# 3. Gunakan LCEL (LangChain Expression Language) sebagai pengganti LLMChain
+chain = prompt_template | llm
 
 def generate_narrative(disease_name):
     info = retrieve_disease_info(disease_name)
     if not info:
         return "⚠️ Data penyakit tidak ditemukan."
 
-    return chain.run(
-        disease_name=disease_name,
-        penyebab="; ".join(info["penyebab"]),
-        gejala="; ".join(info["gejala"]),
-        penanganan="; ".join(info["penanganan"]),
-        pencegahan="; ".join(info["pencegahan"]),
-    )
+    # 4. Gunakan .invoke() dan ambil kontennya
+    response = chain.invoke({
+        "disease_name": disease_name,
+        "penyebab": "; ".join(info["penyebab"]),
+        "gejala": "; ".join(info["gejala"]),
+        "penanganan": "; ".join(info["penanganan"]),
+        "pencegahan": "; ".join(info["pencegahan"]),
+    })
+    
+    return response.content
