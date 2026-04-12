@@ -1,6 +1,6 @@
-# Chilicare: Chili Leaf Disease Detection with YOLOv11 and Structured RAG
+# Chilicare: Chili Leaf Disease Detection with YOLOv11 and RAG
 
-**Chilicare** adalah sebuah proyek AI untuk mendeteksi penyakit pada daun tanaman cabai menggunakan model deteksi objek **YOLOv11**, lalu memberikan penjelasan hasil deteksi melalui sistem **LLM dengan Structured Retrieval‑Augmented Generation (RAG)**.
+**Chilicare** adalah sebuah proyek AI untuk mendeteksi penyakit pada daun tanaman cabai menggunakan model deteksi objek **YOLOv11**, lalu memberikan penjelasan hasil deteksi melalui sistem **LLM dengan Retrieval‑Augmented Generation (RAG)**.
 
 ---
 
