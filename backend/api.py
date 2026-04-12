@@ -4,7 +4,7 @@ from ultralytics import YOLO
 from PIL import Image
 import io
 import uvicorn
-from chains.rag import generate_narrative
+from src.chains.rag import generate_narrative
 
 app = FastAPI(
     title="ChiliCare API",
