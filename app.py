@@ -11,8 +11,8 @@ import logging
 os.environ["TRANSFORMERS_VERBOSITY"] = "error"
 
 
-st.set_page_config(page_title="ourchamplie", layout="centered")
-st.title("🌿Aplikasi Pendeteksi Penyakit Daun Cabai")
+st.set_page_config(page_title="ourchamplie",page_icon="🌶️", layout="centered")
+st.title("🌶️🌿Aplikasi Pendeteksi Penyakit Daun Cabai")
 
 
 @st.cache_resource
@@ -38,7 +38,7 @@ if uploaded_file is not None:
     rgb_image = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
     st.image(rgb_image, caption="Hasil Deteksi Penyakit", use_container_width=True)
 
-    st.subheader("📋 Hasil Deteksi:")
+    st.subheader("📋 Hasil Deteksi: ")
 
     detected_labels = {}
 
@@ -51,14 +51,12 @@ if uploaded_file is not None:
             detected_labels[label] = confidence
 
     for label, confidence in detected_labels.items():
-        st.markdown(f"Hasil:{label.capitalize()} (skor: {confidence:.2f})")
-    
-
-  
+        st.markdown(f"### Hasil: {label.capitalize()} (skor kepercayaan: {confidence:.2%})")
+      
         with st.spinner("Menyusun penjelasan..."):
             narrative = generate_narrative(label.capitalize())
 
-        st.subheader("Penjelasan")
+        st.subheader("🤖 Penjelasan LLM:")
         st.write(narrative)
 
     os.remove(temp_path)
