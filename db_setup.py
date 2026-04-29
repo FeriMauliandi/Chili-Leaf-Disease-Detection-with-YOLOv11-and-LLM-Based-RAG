@@ -46,7 +46,7 @@ def main():
 
     # 5. Simpan ke ChromaDB via LangChain
     print("Menyimpan data ke ChromaDB")
-    vectorstore = Chroma.from_documents(
+    Chroma.from_documents(
         documents=documents,
         embedding=embeddings,
         persist_directory=CHROMA_DB_DIR,
