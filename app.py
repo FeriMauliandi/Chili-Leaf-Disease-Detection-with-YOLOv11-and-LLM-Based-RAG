@@ -1,62 +1,128 @@
 import streamlit as st
+import requests
 from PIL import Image
-from ultralytics import YOLO
-import cv2
-import torch
-import tempfile
-import os
-from src.chains.rag import generate_narrative
+import io
+import base64
 
-import logging
-os.environ["TRANSFORMERS_VERBOSITY"] = "error"
+# URL untuk kedua endpoint FastAPI
+API_DETECT_URL = "http://localhost:8000/detect"
+API_ASK_URL = "http://localhost:8000/ask"
 
+st.set_page_config(page_title="ChiliCare AI", page_icon="🌶️", layout="centered")
 
-st.set_page_config(page_title="ourchamplie",page_icon="🌶️", layout="centered")
-st.title("🌶️🌿Aplikasi Pendeteksi Penyakit Daun Cabai")
+# === MEMBUAT SIDEBAR NAVIGASI ===
+st.sidebar.title("🌶️ Menu ChiliCare")
+st.sidebar.markdown("Pilih fitur yang ingin Anda gunakan:")
+menu = st.sidebar.radio(
+    "====",
+    ["📷 Deteksi Penyakit (Gambar)", "🤖 Chatbot (Teks)"]
+)
 
+# === HALAMAN 1: DETEKSI PENYAKIT (GAMBAR) ===
+if menu == "📷 Deteksi Penyakit (Gambar)":
+    st.title("🌶️🌿 Deteksi Penyakit Daun Cabai")
+    st.write("Unggah foto daun cabai yang sakit untuk mendapatkan diagnosis dan solusinya.")
+    
+    uploaded_file = st.file_uploader("Unggah gambar daun cabai anda", type=["jpg", "jpeg", "png"])
 
-@st.cache_resource
-def load_model():
-    model = YOLO("model/bestv11.pt") 
-    return model
+    if uploaded_file is not None:
+        original_image = Image.open(uploaded_file)
+       # st.image(original_image, caption="Gambar yang Diupload", use_container_width=True)
 
-model = load_model()
-uploaded_file = st.file_uploader("Unggah gambar daun cabai anda", type=["jpg", "jpeg", "png"])
+        files = {"file": (uploaded_file.name, uploaded_file.getvalue(), uploaded_file.type)}
+            
+        try:
+            with st.spinner("Memproses gambar dengan YOLOv11..."):
+                response = requests.post(API_DETECT_URL, files=files)
+                
+            if response.status_code == 200:
+                data = response.json()
+                    
+                if "image_base64" in data:
+                    image_bytes = base64.b64decode(data["image_base64"])
+                    annotated_image = Image.open(io.BytesIO(image_bytes))
+                    st.image(annotated_image, caption="Hasil Analisis YOLO", use_container_width=True)
 
-if uploaded_file is not None:
-    image = Image.open(uploaded_file)
-    # st.image(image, caption="Gambar yang Diupload", use_container_width=True)
+                st.subheader("📋 Hasil Diagnosis: ")
+                if data.get("total_detections", 0) > 0:
+                    for item in data["results"]:
+                        st.markdown(f"### 🦠 {item['class']} (Keyakinan: {item['confidence']:.0%})")
+                        st.info(f"**Saran Penanganan:**\n\n{item['narrative']}")
+                else:
+                    st.success("Tidak ada penyakit yang terdeteksi. Daun tampak sehat!")
+            else:
+                st.error(f"Gagal memproses gambar. Error: {response.status_code}")
+        except requests.exceptions.ConnectionError:
+            st.error("Gagal terhubung ke server FastAPI. Pastikan backend sudah berjalan.")
 
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as temp_file:
-        image.save(temp_file.name)
-        temp_path = temp_file.name
+# === HALAMAN 2: TANYA AHLI (TEKS) ===
+elif menu == "🤖 Chatbot (Teks)":
+    st.title("🤖 Chatbot Ahli Cabai")
+    st.write("Tanyakan seputar perawatan, penyakit, atau pupuk cabai. Saya siap membantu!")
+    
+    # 1. Inisialisasi memori obrolan (session state)
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
 
-    st.info("🔍 Mendeteksi daun...")
+    # 2. Tampilkan riwayat chat sebelumnya agar tidak hilang saat halaman direfresh
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
 
-    results = model(temp_path)
-    annotated_frame = results[0].plot()
-    rgb_image = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
-    st.image(rgb_image, caption="Hasil Deteksi Penyakit", use_container_width=True)
+    # 3. Kolom input untuk user menggunakan gaya chat
+    if prompt := st.chat_input("Tulis pertanyaan Anda di sini... (misal: Kapan waktu panen cabai?)"):
+        
+        # Tampilkan pesan user di layar
+        with st.chat_message("user"):
+            st.markdown(prompt)
+        
+        # Simpan pesan user ke memori
+        st.session_state.messages.append({"role": "user", "content": prompt})
 
-    st.subheader("📋 Hasil Deteksi: ")
+        # Siapkan tempat untuk jawaban AI
+        with st.chat_message("assistant"):
+            with st.spinner("Berpikir dan mencari referensi..."):
+                try:
+                    # KITA KIRIM REQUEST KE FASTAPI (Bukan panggil chain lokal)
+                    payload = {"question": prompt}
+                    response = requests.post(API_ASK_URL, json=payload)
+                    
+                    if response.status_code == 200:
+                        data = response.json()
+                        jawaban = data["answer"]
+                        
+                        # Tampilkan jawaban dari FastAPI/LLM
+                        st.markdown(jawaban)
+                        
+                        # Simpan jawaban ke memori
+                        st.session_state.messages.append({"role": "assistant", "content": jawaban})
+                    else:
+                        error_msg = f"Gagal mendapatkan jawaban. Error: {response.status_code}"
+                        st.error(error_msg)
+                        st.session_state.messages.append({"role": "assistant", "content": error_msg})
+                        
+                except requests.exceptions.ConnectionError:
+                    error_msg = "Gagal terhubung ke server FastAPI. Pastikan backend sudah berjalan."
+                    st.error(error_msg)
+                    st.session_state.messages.append({"role": "assistant", "content": error_msg})
 
-    detected_labels = {}
+st.sidebar.markdown("---")
 
-    for box in results[0].boxes:
-        cls_id = int(box.cls[0])
-        confidence = float(box.conf[0])
-        label = model.names[cls_id]
+st.sidebar.markdown("""
+    # Spesifikasi Model AI
+    **1. Vision (Deteksi Penyakit)**
+    * Model: `YOLOv11s` (Small)
+    * Framework: `Ultralytics`
+    
+    **2. Retrieval-Augmented Generation (RAG)**
+    * Vector Database: `ChromaDB`
+    * Embedding: `Qwen3-Embedding-0.6B`
+    
+    **3. Large Language Model (LLM)**
+    * Model: `Nvidia Nemotron-3 120B`
+    * Provider: `OpenRouter`
+    """)
 
-        if label not in detected_labels or confidence > detected_labels[label]:
-            detected_labels[label] = confidence
+st.sidebar.markdown("---")
 
-    for label, confidence in detected_labels.items():
-        st.markdown(f"### Hasil: {label.capitalize()} (skor kepercayaan: {confidence:.2%})")
-      
-        with st.spinner("Menyusun penjelasan..."):
-            narrative = generate_narrative(label.capitalize())
-
-        st.subheader("🤖 Penjelasan LLM:")
-        st.write(narrative)
-
-    os.remove(temp_path)
+st.sidebar.caption("© 2026 ChiliCare AI Engineer Portfolio")
