@@ -49,18 +49,15 @@ async def detect_disease(file: UploadFile = File(...)):
         
         results = model(image)
         
-        # --- MULAI KODE BARU UNTUK GAMBAR ---
-        # 1. Ambil gambar hasil deteksi (berupa array BGR)
         annotated_frame = results[0].plot()
-        # 2. Ubah BGR ke RGB
+
         rgb_image = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
-        # 3. Ubah menjadi objek PIL Image
+
         img_pil = Image.fromarray(rgb_image)
-        # 4. Simpan ke buffer dan konversi ke Base64
+
         buffered = io.BytesIO()
         img_pil.save(buffered, format="JPEG")
         img_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
-        # --- AKHIR KODE BARU UNTUK GAMBAR ---
 
         detected_labels = {}
         for box in results[0].boxes:
@@ -87,7 +84,7 @@ async def detect_disease(file: UploadFile = File(...)):
             "filename": file.filename,
             "total_detections": len(detections),
             "results": detections,
-            "image_base64": img_base64 # Tambahkan gambar base64 ke respons
+            "image_base64": img_base64 
         }
 
     except Exception as e:
@@ -99,16 +96,13 @@ class QuestionRequest(BaseModel):
 @app.post("/ask")
 async def ask_expert(request: QuestionRequest):
     try:
-        # Panggil RAG text chain
         rag_chain = create_rag_chain()
         
-        # Jalankan RAG (LangChain otomatis akan mencari konteks dan memanggil LLM)
         jawaban = rag_chain.invoke(request.question)
         
         return {
             "status": "success",
             "question": request.question,
-            # Output dari StrOutputParser() di chain.py sudah langsung berupa string jawaban
             "answer": jawaban 
         }
     except Exception as e:
