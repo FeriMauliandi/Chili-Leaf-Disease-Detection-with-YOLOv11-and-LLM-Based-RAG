@@ -11,7 +11,8 @@ from src.retrieval.vector_store import get_vector_store
 SOURCES = [
     "https://www.dgwfertilizer.co.id/8-hama-dan-penyakit-penting-pada-tanaman-cabai/",
     "https://mitrabertani.com/artikel/detail/Budidaya-Cabai-Sederhana-tapi-Penting-Cara-Tepat-Tanam-Cabai",
-    "https://digitani.ipb.ac.id/bagaimana-langkah-langkah-budidaya-cabai/"
+    "https://digitani.ipb.ac.id/bagaimana-langkah-langkah-budidaya-cabai/",
+    "data/cabai.pdf"
 ]
 
 def run_ingestion_pipeline():

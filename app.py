@@ -5,8 +5,11 @@ import io
 import base64
 
 # URL untuk kedua endpoint FastAPI
-API_DETECT_URL = "http://localhost:8000/detect"
-API_ASK_URL = "http://localhost:8000/ask"
+# API_DETECT_URL = "http://localhost:8000/detect"
+# API_ASK_URL = "http://localhost:8000/ask"
+
+API_DETECT_URL = "http://backend:8000/detect"
+API_ASK_URL = "http://backend:8000/ask"
 
 st.set_page_config(page_title="ChiliCare AI", page_icon="🌶️", layout="centered")
 

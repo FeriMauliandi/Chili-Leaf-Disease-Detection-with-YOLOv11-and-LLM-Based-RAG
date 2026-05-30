@@ -1,15 +1,17 @@
-const API_DETECT_URL = "http://localhost:8000/detect";
-const API_ASK_URL = "http://localhost:8000/ask";
+// const API_DETECT_URL = "http://localhost:8000/detect";
+// const API_ASK_URL = "http://localhost:8000/ask";
 
-// const API_DETECT_URL = "https://r7sc5m17-8000.asse.devtunnels.ms/detect";
-// const API_ASK_URL = "https://r7sc5m17-8000.asse.devtunnels.ms/ask";
+const API_DETECT_URL = "https://r7sc5m17-8000.asse.devtunnels.ms/detect";
+const API_ASK_URL = "https://r7sc5m17-8000.asse.devtunnels.ms/ask";
+
+// API_DETECT_URL = "http://backend:8000/detect";
+// API_ASK_URL = "http://backend:8000/ask";
 
 let selectedFile = null;
 
 function parseMarkdown(text) {
   if (!text) return "";
   let html = text;
-
   html = html.replace(/(?:^\|.*\|(?:\n|\r|$))+/gm, function(match) {
       let rows = match.trim().split('\n');
       let tableHtml = '<div class="overflow-x-auto my-5 rounded-xl ring-1 ring-slate-200 shadow-sm"><table class="w-full text-sm text-left text-slate-600">';
