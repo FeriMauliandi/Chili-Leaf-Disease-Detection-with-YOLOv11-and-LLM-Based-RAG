@@ -1,0 +1,21 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
+torchvision
+fastapi
+uvicorn
+python-multipart
+sentence-transformers
+ultralytics
+pillow
+langchain_classic
+langchain_core
+opencv-python-headless
+langchain
+langchain-core
+langchain-openai
+langchain-chroma
+langchain-huggingface
+chromadb
+pypdf
+streamlit
+python-dotenv

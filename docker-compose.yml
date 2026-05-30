@@ -1,0 +1,36 @@
+services:
+  backend:
+    build: .
+    container_name: chilicare_backend
+    # server FastAPI
+    command: uvicorn backend.api:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./chroma_data:/app/chroma_data 
+      - ./model:/app/model
+      - hf_cache:/root/.cache/huggingface
+    env_file:
+      - .env 
+
+  streamlit:
+    build: .
+    container_name: chilicare_streamlit
+    # Streamlit
+    command: streamlit run app.py --server.address 0.0.0.0
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend
+
+  frontend_web:
+    image: nginx:alpine
+    container_name: chilicare_frontend
+    # Nginx untuk menjalankan web HTML 
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+
+volumes:
+  hf_cache:

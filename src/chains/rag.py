@@ -2,8 +2,6 @@ import os
 from langchain_openai import ChatOpenAI
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
-
-# 1. Import prompt dari file terpisah yang baru dibuat
 from src.chains.prompt import DISEASE_PROMPT_TEMPLATE
 
 llm = ChatOpenAI(
@@ -27,16 +25,23 @@ chain = DISEASE_PROMPT_TEMPLATE | llm
 def generate_narrative(disease_name):
     print(f"Mencari data untuk label: {disease_name}...")
     
+    # PERBAIKAN 1: Buat query pencarian yang deskriptif secara semantik
+    # Ini membantu model embedding mencari potongan teks yang paling relevan
+    search_query = f"Penjelasan lengkap mengenai penyebab, ciri-ciri gejala, dan cara mengatasi penyakit {disease_name} pada tanaman cabai."
+    
+    # PERBAIKAN 2: Tingkatkan nilai k untuk mengambil lebih banyak konteks
     results = vectorstore.similarity_search(
-        query="berikan penjelasan lengkap", # dummy query karena kita sudah filter berdasarkan label
-        k=1,
+        query=search_query, 
+        k=3,  # Mengambil 3 potongan (chunks) teratas
         filter={"label": disease_name}
     )
 
     if not results:
         return f"Data penyakit '{disease_name}' tidak ditemukan di database."
 
-    retrieved_context = results[0].page_content
+    # PERBAIKAN 3: Gabungkan semua teks dari dokumen yang ditemukan
+    # Agar LLM mendapatkan informasi yang utuh, tidak hanya dari 1 chunk saja
+    retrieved_context = "\n\n".join([doc.page_content for doc in results])
 
     print("Data ditemukan. Menghasilkan narasi dengan LLM...")
 
