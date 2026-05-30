@@ -6,11 +6,13 @@ uvicorn
 python-multipart
 sentence-transformers
 ultralytics
+rank_bm25     
 pillow
 langchain_classic
 langchain_core
 opencv-python-headless
 langchain
+langchain_community
 langchain-core
 langchain-openai
 langchain-chroma

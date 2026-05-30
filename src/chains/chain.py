@@ -17,7 +17,7 @@ from src.chains.prompt import get_rag_prompt
 
 load_dotenv()
 
-def create_rag_chain():
+def create_rag_chain(disease_label=None):
     llm = ChatOpenAI(
         model="nvidia/nemotron-3-nano-30b-a3b:free", 
         temperature=0.2,
@@ -26,20 +26,20 @@ def create_rag_chain():
     ) 
     
     vs = get_vector_store()
-    base_retriever = get_retriever(vs, search_type="similarity", k=3) # Mengambil 3 chunks teratas
+    base_retriever = get_retriever(
+        vector_store=vs, 
+        search_type="similarity", 
+        k=3,
+        filter_label=disease_label 
+    )
     
-    # 3. REFACTOR: Bungkus menjadi Multi-Query Retriever
-    # LLM akan otomatis membuat ~3 variasi pertanyaan alternatif dari pertanyaan user
-    # untuk memastikan dokumen di ChromaDB terambil dengan lebih akurat secara semantik.
     retriever = MultiQueryRetriever.from_llm(
         retriever=base_retriever,
         llm=llm
     )
     
-    # 4. Setup Prompt
     prompt = get_rag_prompt()
     
-    # 5. Fungsi Interceptor untuk Debugging di Terminal
     def format_docs(docs):
         # ==========================================
         # INTERCEPTOR: Print metadata ke Terminal
