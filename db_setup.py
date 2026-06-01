@@ -40,11 +40,9 @@ def main():
         )
         documents.append(doc)
 
-    # 4. Setup Embedding Model
     print("Memuat Embedding Model")
     embeddings = HuggingFaceEmbeddings(model_name="Qwen/Qwen3-Embedding-0.6B")
 
-    # 5. Simpan ke ChromaDB via LangChain
     print("Menyimpan data ke ChromaDB")
     Chroma.from_documents(
         documents=documents,
