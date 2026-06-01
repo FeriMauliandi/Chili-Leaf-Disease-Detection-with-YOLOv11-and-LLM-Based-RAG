@@ -41,21 +41,14 @@ def create_rag_chain(disease_label=None):
     prompt = get_rag_prompt()
     
     def format_docs(docs):
-        # ==========================================
-        # INTERCEPTOR: Print metadata ke Terminal
-        # ==========================================
-        print("\n" + "▼"*50)
         print("🔍 [DEBUG] DOKUMEN YANG DITARIK MULTI-QUERY RETRIEVER:")
         for i, doc in enumerate(docs):
             sumber = doc.metadata.get('label', 'Sumber tidak diketahui')
             print(f"  [{i+1}] Topik/Label: {sumber}")
-        print("▲"*50 + "\n")
-        # ==========================================
         
         # Gabungkan teks dokumen yang berhasil dikumpulkan dari semua query alternatif
         return "\n\n".join(doc.page_content for doc in docs)
         
-    # 6. Rangkai menjadi Chain (LCEL)
     rag_chain = (
         {"context": retriever | format_docs, "input": RunnablePassthrough()} 
         | prompt
@@ -65,7 +58,6 @@ def create_rag_chain(disease_label=None):
     
     return rag_chain
 
-# ======= Blok testing =========
 if __name__ == "__main__":
     chain = create_rag_chain()
     
@@ -75,7 +67,7 @@ if __name__ == "__main__":
     
     try:
         jawaban = chain.invoke(pertanyaan)
-        print("=== JAWABAN RAG ===")
+        print("JAWABAN RAG")
         print(jawaban)
     except Exception as e:
         print(f"Terjadi kesalahan: {e}")

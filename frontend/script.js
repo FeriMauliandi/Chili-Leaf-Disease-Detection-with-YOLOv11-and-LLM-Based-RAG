@@ -23,10 +23,8 @@ function parseMarkdown(text) {
           tableHtml += '<tr class="border-b border-slate-200 last:border-0 hover:bg-slate-50 transition-colors">';
           cols.forEach(col => {
               if (index === 0) {
-                  // Baris pertama jadi Header (TH)
                   tableHtml += `<th class="px-4 py-3 bg-slate-100 font-semibold text-slate-700 whitespace-nowrap">${col}</th>`;
               } else {
-                  // Baris selanjutnya jadi Data (TD)
                   tableHtml += `<td class="px-4 py-3 align-top">${col}</td>`;
               }
           });
@@ -36,35 +34,27 @@ function parseMarkdown(text) {
       return tableHtml;
   });
 
-  // 2. Heading 3 (### Teks)
   html = html.replace(/^###\s+(.*$)/gim, '<h3 class="text-lg font-bold text-slate-800 mt-5 mb-2">$1</h3>');
   
-  // 3. Heading 2 (## Teks)
   html = html.replace(/^##\s+(.*$)/gim, '<h2 class="text-xl font-bold text-slate-800 mt-5 mb-2">$1</h2>');
 
-  // 4. Bold (**Teks**)
   html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-slate-800">$1</strong>');
   
-  // 5. Bullet points (* Teks atau - Teks di awal baris)
   html = html.replace(/^[\*\-]\s+(.*$)/gim, '<div class="flex gap-2 mt-1.5"><span class="text-rose-500 font-bold shrink-0">•</span><span>$1</span></div>');
 
-  // 6. Italic (*Teks*)
   html = html.replace(/(?<!^)\*(.*?)\*/g, '<em class="italic text-slate-700">$1</em>');
 
-  // 7. Ubah Enter (\n) menjadi <br>
   html = html.replace(/\n/g, '<br/>');
   
-  // 8. Bersihkan sisa <br> berlebih agar spasi tidak terlalu jauh
   html = html.replace(/<\/h3><br\/>/g, '</h3>');
   html = html.replace(/<\/h2><br\/>/g, '</h2>');
   html = html.replace(/<\/div><br\/>/g, '</div>');
-  html = html.replace(/<\/div><br\/><br\/>/g, '</div>'); // Jaga jarak bawah tabel
+  html = html.replace(/<\/div><br\/><br\/>/g, '</div>'); 
   html = html.replace(/(<br\/>){3,}/g, '<br/><br/>');
 
   return html;
 }
 
-// --- 1. UPDATE FUNGSI NAVIGASI ---
 function switchMenu(menu) {
   const secDetect = document.getElementById("section-detect");
   const secChat = document.getElementById("section-chat");
@@ -91,7 +81,6 @@ function switchMenu(menu) {
   }
 }
 
-// --- FUNGSI DETEKSI PENYAKIT ---
 function handleFileChange(event) {
   const file = event.target.files[0];
   if (file) {
@@ -145,7 +134,6 @@ async function handleUpload() {
   }
 }
 
-// --- 2. UPDATE KOTAK HASIL DETEKSI ---
 function tampilkanHasilDeteksi(data) {
   const resultContainer = document.getElementById("detect-result");
   const resultImage = document.getElementById("result-image");
@@ -190,7 +178,6 @@ function tampilkanHasilDeteksi(data) {
   resultContainer.classList.remove("hidden");
 }
 
-// --- FUNGSI CHATBOT ---
 async function handleSendChat(event) {
   event.preventDefault();
 
@@ -231,7 +218,6 @@ async function handleSendChat(event) {
   }
 }
 
-// --- 3. UPDATE CHAT BUBBLE ---
 function appendMessage(role, content) {
   const chatBox = document.getElementById("chat-messages");
   const wrapper = document.createElement("div");

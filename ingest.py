@@ -5,7 +5,6 @@ sys.path.append(root_dir)
 
 from src.ingestion.loader import load_data
 from src.ingestion.chunker import split_documents
-# Hapus import get_embedding_model karena sudah di-handle di dalam vector_store.py
 from src.retrieval.vector_store import get_vector_store
 
 SOURCES = [
@@ -31,10 +30,8 @@ def run_ingestion_pipeline():
     if all_chunks:
         print(f"\nMenyiapkan model embedding dan menyimpan {len(all_chunks)} chunks ke ChromaDB...")
         
-        # 1. Panggil database yang sudah ada (termasuk embedder-nya)
         db = get_vector_store()
         
-        # 2. Tambahkan chunks baru ke dalam koleksi 'chilicare_kb'
         db.add_documents(all_chunks)
         
         print("\nSelesai! Semua data web telah masuk ke database dan siap digunakan oleh API/Streamlit.")

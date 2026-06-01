@@ -18,7 +18,6 @@ def load_data(source: str):
         loader = TextLoader(source, encoding="utf-8")
         documents = loader.load()
         
-    # TAMBAHAN BARU UNTUK CSV
     elif source.lower().endswith(".csv"):
         if not os.path.exists(source): raise FileNotFoundError(f"File tidak ditemukan: {source}")
         loader = CSVLoader(source, encoding="utf-8") 
