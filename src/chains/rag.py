@@ -1,4 +1,6 @@
 import os
+from dotenv import load_dotenv
+from langchain_groq import ChatGroq
 from langchain_openai import ChatOpenAI
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -7,13 +9,13 @@ from langchain_classic.retrievers import EnsembleRetriever
 from langchain_core.documents import Document
 from src.chains.prompt import DISEASE_PROMPT_TEMPLATE
 
-llm = ChatOpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENROUTER_API_KEY"),
-    model="nvidia/nemotron-3-nano-30b-a3b:free",
-    temperature=0.4,
-    max_tokens=1500
-)
+load_dotenv()
+
+llm = ChatGroq(
+        model="openai/gpt-oss-20b", 
+        temperature=0.2,
+        api_key=os.getenv("GROQ_API_KEY"),
+    ) 
 
 print("Memuat koneksi ke Database...")
 embeddings = HuggingFaceEmbeddings(model_name="Qwen/Qwen3-Embedding-0.6B")

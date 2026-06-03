@@ -8,6 +8,7 @@ import base64
 import cv2 
 import numpy as np 
 from pydantic import BaseModel
+from fastapi.responses import StreamingResponse
 from src.chains.rag import generate_narrative
 from src.chains.chain import create_rag_chain
 
@@ -98,13 +99,19 @@ async def ask_expert(request: QuestionRequest):
     try:
         rag_chain = create_rag_chain()
         
-        jawaban = rag_chain.invoke(request.question)
+        # Buat fungsi generator untuk memecah respons menjadi potongan (chunks)
+        def generate_response():
+            # rag_chain.stream() menggantikan rag_chain.invoke()
+            for chunk in rag_chain.stream(request.question):
+                # yield mengirimkan potongan teks ke klien saat itu juga
+                yield chunk 
+                
+        # Kembalikan StreamingResponse, bukan dictionary JSON
+        return StreamingResponse(
+            generate_response(), 
+            media_type="text/event-stream"
+        )
         
-        return {
-            "status": "success",
-            "question": request.question,
-            "answer": jawaban 
-        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Terjadi kesalahan pada LLM: {str(e)}")
 
