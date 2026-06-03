@@ -8,6 +8,7 @@ sys.path.append(root_dir)
 from langchain_community.cross_encoders import HuggingFaceCrossEncoder
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
+from langchain_groq import ChatGroq
 from langchain_openai import ChatOpenAI 
 from langchain_classic.retrievers.document_compressors import CrossEncoderReranker
 from langchain_core.messages import SystemMessage
@@ -19,11 +20,11 @@ from src.chains.prompt import get_rag_prompt
 load_dotenv()
 
 def create_rag_chain(disease_label=None):
-    llm = ChatOpenAI(
-        model="nvidia/nemotron-3-nano-30b-a3b:free", 
+    llm = ChatGroq(
+        model="openai/gpt-oss-20b", 
+        streaming=True,
         temperature=0.2,
-        openai_api_key=os.getenv("OPENROUTER_API_KEY"), 
-        openai_api_base="https://openrouter.ai/api/v1",
+        api_key=os.getenv("GROQ_API_KEY"),
     ) 
     
     vs = get_vector_store()

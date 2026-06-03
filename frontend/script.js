@@ -10,47 +10,91 @@ let selectedFile = null;
 function parseMarkdown(text) {
   if (!text) return "";
   let html = text;
-  html = html.replace(/(?:^\|.*\|(?:\n|\r|$))+/gm, function(match) {
-      let rows = match.trim().split('\n');
-      let tableHtml = '<div class="overflow-x-auto my-5 rounded-xl ring-1 ring-slate-200 shadow-sm"><table class="w-full text-sm text-left text-slate-600">';
-      
-      rows.forEach((row, index) => {
-          if (row.match(/^\|[\s\-\:]+\|/)) return;
+  html = html.replace(/(?:^\|.*\|(?:\n|\r|$))+/gm, function (match) {
+    let rows = match.trim().split("\n");
+    let tableHtml =
+      '<div class="overflow-x-auto my-5 rounded-xl ring-1 ring-slate-200 shadow-sm"><table class="w-full text-sm text-left text-slate-600">';
 
-          let cleanRow = row.replace(/^\||\|$/g, '');
-          let cols = cleanRow.split('|').map(c => c.trim());
+    rows.forEach((row, index) => {
+      if (row.match(/^\|[\s\-\:]+\|/)) return;
 
-          tableHtml += '<tr class="border-b border-slate-200 last:border-0 hover:bg-slate-50 transition-colors">';
-          cols.forEach(col => {
-              if (index === 0) {
-                  tableHtml += `<th class="px-4 py-3 bg-slate-100 font-semibold text-slate-700 whitespace-nowrap">${col}</th>`;
-              } else {
-                  tableHtml += `<td class="px-4 py-3 align-top">${col}</td>`;
-              }
-          });
-          tableHtml += '</tr>';
+      let cleanRow = row.replace(/^\||\|$/g, "");
+      let cols = cleanRow.split("|").map((c) => c.trim());
+
+      tableHtml +=
+        '<tr class="border-b border-slate-200 last:border-0 hover:bg-slate-50 transition-colors">';
+      cols.forEach((col) => {
+        if (index === 0) {
+          tableHtml += `<th class="px-4 py-3 bg-slate-100 font-semibold text-slate-700 whitespace-nowrap">${col}</th>`;
+        } else {
+          tableHtml += `<td class="px-4 py-3 align-top">${col}</td>`;
+        }
       });
-      tableHtml += '</table></div>';
-      return tableHtml;
+      tableHtml += "</tr>";
+    });
+    tableHtml += "</table></div>";
+    return tableHtml;
   });
 
-  html = html.replace(/^###\s+(.*$)/gim, '<h3 class="text-lg font-bold text-slate-800 mt-5 mb-2">$1</h3>');
-  
-  html = html.replace(/^##\s+(.*$)/gim, '<h2 class="text-xl font-bold text-slate-800 mt-5 mb-2">$1</h2>');
+  // 1. Headings (H2, H3, H4)
+  html = html.replace(
+    /^##\s+(.*$)/gim,
+    '<h2 class="text-xl font-bold text-slate-800 mt-5 mb-2">$1</h2>',
+  );
+  html = html.replace(
+    /^###\s+(.*$)/gim,
+    '<h3 class="text-lg font-bold text-slate-800 mt-5 mb-2">$1</h3>',
+  );
+  html = html.replace(
+    /^####\s+(.*$)/gim,
+    '<h3 class="text-lg font-bold text-slate-800 mt-5 mb-2">$1</h3>',
+  );
 
-  html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-slate-800">$1</strong>');
-  
-  html = html.replace(/^[\*\-]\s+(.*$)/gim, '<div class="flex gap-2 mt-1.5"><span class="text-rose-500 font-bold shrink-0">•</span><span>$1</span></div>');
+  // 2. Garis Pembatas (Horizontal Rule)
+  html = html.replace(/^---$/gm, '<hr class="my-4 border-slate-200" />');
 
-  html = html.replace(/(?<!^)\*(.*?)\*/g, '<em class="italic text-slate-700">$1</em>');
+  // 3. Bold & Italic
+  html = html.replace(
+    /\*\*(.*?)\*\*/g,
+    '<strong class="font-bold text-slate-800">$1</strong>',
+  );
+  html = html.replace(
+    /(?<!^)\*(.*?)\*/g,
+    '<em class="italic text-slate-700">$1</em>',
+  );
 
-  html = html.replace(/\n/g, '<br/>');
-  
-  html = html.replace(/<\/h3><br\/>/g, '</h3>');
-  html = html.replace(/<\/h2><br\/>/g, '</h2>');
-  html = html.replace(/<\/div><br\/>/g, '</div>');
-  html = html.replace(/<\/div><br\/><br\/>/g, '</div>'); 
-  html = html.replace(/(<br\/>){3,}/g, '<br/><br/>');
+  // 4. Bullet Points (Menangkap *, -, dan •)
+  html = html.replace(
+    /^[\*\-•]\s+(.*$)/gim,
+    '<div class="flex gap-2 mt-1.5"><span class="text-rose-500 font-bold shrink-0">•</span><span>$1</span></div>',
+  );
+
+  // 5. Numbered List (Menangkap 1., 2., 3., dst) agar rapi sejajar
+  html = html.replace(
+    /^(\d+)\.\s+(.*$)/gim,
+    '<div class="flex gap-2 mt-1.5"><span class="text-rose-500 font-bold shrink-0">$1.</span><span>$2</span></div>',
+  );
+
+  // 6. Ubah Enter menjadi <br/>
+  html = html.replace(/\n/g, "<br/>");
+
+  // 7. PEMBERSIHAN EKSTREM: Hapus <br/> yang menumpuk di sekitar elemen UI
+  // Bersihkan sekitar garis pembatas
+  html = html.replace(/(<br\/>)+<hr/g, "<hr");
+  html = html.replace(/<hr(.*?)>(<br\/>)+/g, "<hr$1>");
+
+  // Bersihkan sekitar Headings
+  html = html.replace(/(<br\/>)+<h2/g, "<h2");
+  html = html.replace(/<\/h2>(<br\/>)+/g, "</h2>");
+  html = html.replace(/(<br\/>)+<h3/g, "<h3");
+  html = html.replace(/<\/h3>(<br\/>)+/g, "</h3>");
+
+  // Bersihkan sekitar kotak list (bullet & angka)
+  html = html.replace(/(<br\/>)+<div/g, "<div");
+  html = html.replace(/<\/div>(<br\/>)+/g, "</div>");
+
+  // Maksimal 2 <br/> berturut-turut untuk paragraf biasa
+  html = html.replace(/(<br\/>){3,}/g, "<br/><br/>");
 
   return html;
 }
@@ -85,18 +129,31 @@ function handleFileChange(event) {
   const file = event.target.files[0];
   if (file) {
     selectedFile = file;
+
+    // 1. Tampilkan nama file & tombol analisis
     const fileNameEl = document.getElementById("file-name");
-    fileNameEl.textContent = `File: ${file.name}`;
-    fileNameEl.classList.remove("hidden");
+    if (fileNameEl) {
+      fileNameEl.textContent = `File: ${file.name}`;
+      fileNameEl.classList.remove("hidden");
+    }
     document.getElementById("btn-upload").classList.remove("hidden");
 
-    const previewContainer = document.getElementById("preview-container");
+    // 2. KONTROL TAMPILAN KOTAK UPLOAD
     const imagePreview = document.getElementById("image-preview");
-    imagePreview.src = URL.createObjectURL(file);
-    previewContainer.classList.remove("hidden");
+    const uploadPlaceholder = document.getElementById("upload-placeholder");
 
-    document.getElementById("detect-result").classList.add("hidden");
-    document.getElementById("detect-error").classList.add("hidden");
+    // Masukkan sumber gambar
+    imagePreview.src = URL.createObjectURL(file);
+
+    // Sembunyikan ikon/teks, lalu tampilkan gambarnya
+    if (uploadPlaceholder) uploadPlaceholder.classList.add("hidden");
+    if (imagePreview) imagePreview.classList.remove("hidden");
+
+    // 3. Reset hasil deteksi sebelumnya jika ada
+    const detectResult = document.getElementById("detect-result");
+    const detectError = document.getElementById("detect-error");
+    if (detectResult) detectResult.classList.add("hidden");
+    if (detectError) detectError.classList.add("hidden");
   }
 }
 
@@ -124,7 +181,26 @@ async function handleUpload() {
     if (!response.ok) throw new Error(`Error server: ${response.status}`);
 
     const data = await response.json();
+
+    // Tampilkan hasil deteksi (gambar ber-bounding box dan teksnya)
     tampilkanHasilDeteksi(data);
+
+    // --- KODE RESET KOTAK UPLOAD DITAMBAHKAN DI SINI ---
+    // 1. Sembunyikan gambar preview daun dan tampilkan kembali ikon placeholder
+    const imagePreview = document.getElementById("image-preview");
+    const uploadPlaceholder = document.getElementById("upload-placeholder");
+
+    if (imagePreview) imagePreview.classList.add("hidden");
+    if (uploadPlaceholder) uploadPlaceholder.classList.remove("hidden");
+
+    // 2. Sembunyikan teks nama file dan tombol analisis agar bersih
+    document.getElementById("file-name").classList.add("hidden");
+    btnUpload.classList.add("hidden");
+
+    // 3. Bersihkan memori agar user bisa mengunggah file yang sama lagi jika perlu
+    selectedFile = null;
+    document.getElementById("file-upload").value = "";
+    // --------------------------------------------------
   } catch (err) {
     errorContainer.textContent = "Gagal terhubung ke server.";
     errorContainer.classList.remove("hidden");
@@ -176,6 +252,10 @@ function tampilkanHasilDeteksi(data) {
   }
 
   resultContainer.classList.remove("hidden");
+
+  setTimeout(() => {
+    resultContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, 500);
 }
 
 async function handleSendChat(event) {
@@ -186,14 +266,16 @@ async function handleSendChat(event) {
   const question = inputEl.value.trim();
   if (!question) return;
 
-  document.getElementById("chat-empty").classList.add("hidden");
+  const chatEmpty = document.getElementById("chat-empty");
+  if (chatEmpty) chatEmpty.classList.add("hidden");
 
+  // 1. Tampilkan pertanyaan User
   appendMessage("user", question);
   inputEl.value = "";
-
   inputEl.disabled = true;
   btnSend.disabled = true;
 
+  // 2. Tampilkan animasi loading (...) sebelum AI mulai mengetik
   const loadingId = showChatLoading();
 
   try {
@@ -205,12 +287,57 @@ async function handleSendChat(event) {
 
     if (!response.ok) throw new Error("Gagal");
 
-    const data = await response.json();
+    // AI mulai membalas, hilangkan animasi loading
     removeChatLoading(loadingId);
-    appendMessage("assistant", data.answer);
+
+const aiBubble = appendMessage("assistant", "");
+    const chatBox = document.getElementById("chat-messages");
+
+    // 4. LOGIKA STREAMING DENGAN "REM MESIN TIK" (TYPEWRITER EFFECT)
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+    
+    let fullTextFromAPI = ""; // Tangki penampung teks super cepat dari server
+    let textToDisplay = "";   // Teks yang akan diteteskan ke layar perlahan-lahan
+    let charIndex = 0;
+
+    // A. Fungsi pengetik independen (Jalan di latar belakang)
+    // Angka 15 adalah kecepatan ketik (15 milidetik per huruf). Bisa Anda perbesar jika ingin lebih lambat.
+    const typingInterval = setInterval(() => {
+      // Jika masih ada huruf di tangki yang belum ditampilkan
+      if (charIndex < fullTextFromAPI.length) {
+        // Keluarkan 2 huruf sekaligus agar tidak terlalu lambat
+        textToDisplay += fullTextFromAPI.slice(charIndex, charIndex + 4);
+        charIndex += 4;
+        
+        aiBubble.innerHTML = parseMarkdown(textToDisplay);
+        scrollToBottom(chatBox);
+      }
+    }, 15); 
+
+    // B. Pipa penyedot dari API Server (Berjalan secepat kilat)
+    while (true) {
+      const { done, value } = await reader.read();
+      
+      if (done) {
+        // Matikan interval pengetik HANYA JIKA semua teks sudah berhasil diketik ke layar
+        const waitComplete = setInterval(() => {
+          if (charIndex >= fullTextFromAPI.length) {
+            clearInterval(typingInterval);
+            clearInterval(waitComplete);
+          }
+        }, 50);
+        break;
+      }
+
+      // Terjemahkan byte dan masukkan langsung ke tangki penampung
+      const chunkText = decoder.decode(value, { stream: true });
+      fullTextFromAPI += chunkText; 
+    }
+
   } catch (err) {
     removeChatLoading(loadingId);
-    appendMessage("assistant", "❌ Gagal terhubung ke server.");
+    appendMessage("assistant", "❌ Gagal terhubung ke server. Silakan coba lagi.");
   } finally {
     inputEl.disabled = false;
     btnSend.disabled = false;
@@ -227,17 +354,21 @@ function appendMessage(role, content) {
   if (role === "user") {
     bubble.className =
       "max-w-[90%] md:max-w-[80%] p-3 md:p-4 rounded-2xl rounded-tr-sm bg-rose-500 text-white shadow-md shadow-rose-200 leading-relaxed text-sm md:text-[15px]";
-    bubble.textContent = content; // User input tetap menggunakan text content murni demi keamanan
+    bubble.textContent = content;
   } else {
     bubble.className =
       "max-w-[90%] md:max-w-[80%] p-3 md:p-4 rounded-2xl rounded-tl-sm bg-white ring-1 ring-slate-200 text-slate-700 shadow-sm leading-relaxed text-sm md:text-[15px]";
 
-    bubble.innerHTML = parseMarkdown(content);
+    // Jika ada konten (user history), parse markdown. Jika kosong (awal streaming), biarkan kosong.
+    bubble.innerHTML = content ? parseMarkdown(content) : "";
   }
 
   wrapper.appendChild(bubble);
   chatBox.appendChild(wrapper);
   scrollToBottom(chatBox);
+
+  // KUNCI PERUBAHAN: Kembalikan elemen bubble agar bisa di-update oleh fungsi streaming
+  return bubble;
 }
 
 function showChatLoading() {

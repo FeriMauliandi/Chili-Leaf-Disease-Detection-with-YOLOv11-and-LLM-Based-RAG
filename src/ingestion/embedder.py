@@ -1,7 +1,9 @@
+import os
 from langchain_huggingface import HuggingFaceEmbeddings
 import torch
 
-model_name = "Qwen/Qwen3-Embedding-0.6B"
+
+model_name = "LazarusNLP/all-indo-e5-small-v4"
 
 def get_embedding_model(model_name: str = model_name):
     print(f"Mempersiapkan model embedding: {model_name}")
