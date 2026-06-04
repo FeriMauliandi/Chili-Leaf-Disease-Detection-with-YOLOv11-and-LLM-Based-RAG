@@ -1,3 +1,17 @@
+---
+title: ChiliCare AI
+emoji: 🌶️
+colorFrom: red
+colorTo: yellow
+sdk: docker
+pinned: false
+short_description: Deteksi Penyakit Daun Cabai berbasis YOLOv11 dan LLM
+---
+
+# ChiliCare AI
+*(Anda bisa membiarkan isi README lama Anda di bawah garis pemisah ini...)*
+
+
 # ChiliCare: Chili Leaf Disease Detection with YOLOv11 and RAG
 
 **ChiliCare** adalah sebuah aplikasi web AI berarsitektur *dual-pipeline* yang dirancang untuk manajemen kesehatan tanaman cabai. Sistem ini mengintegrasikan model *Computer Vision* (**YOLOv11**) untuk deteksi penyakit secara visual dan ekosistem *Large Language Models* (LLM) berbasis **Retrieval-Augmented Generation (RAG)** untuk memberikan diagnosis, rekomendasi penanganan, serta asisten virtual interaktif.
