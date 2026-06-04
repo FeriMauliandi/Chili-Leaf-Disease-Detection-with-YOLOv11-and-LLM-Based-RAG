@@ -1,6 +1,16 @@
 # Gunakan versi Python yang stabil untuk library AI
 FROM python:3.10-slim
 
+RUN apt-get update && apt-get install -y \
+    libgl1 \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxrender1 \
+    libxext6 \
+    libxcb1 \
+    && rm -rf /var/lib/apt/lists/*
+
 # Bikin user non-root sesuai aturan Hugging Face (Wajib)
 RUN useradd -m -u 1000 user
 USER user
