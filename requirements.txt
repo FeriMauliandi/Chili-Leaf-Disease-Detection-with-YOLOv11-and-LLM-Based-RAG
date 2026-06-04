@@ -12,6 +12,7 @@ langchain_classic
 langchain_core
 opencv-python-headless
 langchain
+langchain_groq
 langchain_community
 langchain-experimental
 langchain-core
