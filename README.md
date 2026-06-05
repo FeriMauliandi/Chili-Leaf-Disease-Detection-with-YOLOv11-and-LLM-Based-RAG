@@ -27,9 +27,9 @@ Proyek ini dibangun sebagai Tugas Akhir sekaligus portofolio AI Engineering, den
 
 ---
 
-## 🏗️ Arsitektur Sistem
+## Arsitektur Sistem
 
-<!-- 📸 [IMAGE: Diagram arsitektur sistem — tampilkan dua pipeline: (1) Vision Pipeline: User Upload → YOLOv11 → Bounding Box + Label → RAG → LLM → Diagnosis Naratif, dan (2) Chat Pipeline: User Input → MultiQueryRetriever → CrossEncoder Reranker → LLM → Jawaban. Bisa dibuat dengan draw.io, Mermaid, atau Excalidraw] -->
+<!-- [IMAGE: Diagram arsitektur sistem — tampilkan dua pipeline: (1) Vision Pipeline: User Upload → YOLOv11 → Bounding Box + Label → RAG → LLM → Diagnosis Naratif, dan (2) Chat Pipeline: User Input → MultiQueryRetriever → CrossEncoder Reranker → LLM → Jawaban. Bisa dibuat dengan draw.io, Mermaid, atau Excalidraw] -->
 
 ### Pipeline 1: Vision Diagnosis (Image → Text)
 
@@ -57,18 +57,18 @@ Pertanyaan User → MultiQueryRetriever (LangChain)
 
 ---
 
-## ✨ Fitur Utama
+## Fitur Utama
 
 | Fitur | Deskripsi | Teknologi |
 |-------|-----------|-----------|
-| 🔍 **Deteksi Penyakit** | Upload gambar daun, sistem mendeteksi area terinfeksi dengan bounding box | YOLOv11, OpenCV |
-| 📋 **Diagnosis Otomatis** | Hasil deteksi dikonversi menjadi penjelasan penyakit dan saran penanganan | RAG, LangChain, Groq |
-| 🤖 **Chatbot Pakar** | Asisten interaktif untuk tanya jawab seputar perawatan dan penyakit cabai | MultiQuery RAG, CrossEncoder Reranker |
-| 🐳 **Siap Deploy** | Dikonfigurasi dengan Docker dan docker-compose untuk deployment yang konsisten | Docker, FastAPI |
+| **Deteksi Penyakit** | Upload gambar daun, sistem mendeteksi area terinfeksi dengan bounding box | YOLOv11, OpenCV |
+| **Diagnosis Otomatis** | Hasil deteksi dikonversi menjadi penjelasan penyakit dan saran penanganan | RAG, LangChain, Groq |
+| **Chatbot Pakar** | Asisten interaktif untuk tanya jawab seputar perawatan dan penyakit cabai | MultiQuery RAG, CrossEncoder Reranker |
+| **Siap Deploy** | Dikonfigurasi dengan Docker dan docker-compose untuk deployment yang konsisten | Docker, FastAPI |
 
 ---
 
-## 📊 Performa Model YOLOv11
+## Performa Model YOLOv11
 
 <!-- 📸 [IMAGE: Confusion matrix dari hasil training — export dari Ultralytics training output folder (runs/detect/train/confusion_matrix.png)] -->
 
@@ -76,16 +76,16 @@ Pertanyaan User → MultiQueryRetriever (LangChain)
 
 | Metrik | Nilai |
 |--------|-------|
-| mAP@50 | <!-- isi dari hasil training Anda --> |
-| Precision | <!-- isi dari hasil training Anda --> |
-| Recall | <!-- isi dari hasil training Anda --> |
+| mAP@50 | 0.882 |
+| Precision | 0.83 |
+| Recall | 0.844 |
 | Dataset | Roboflow — Chili Leaf Disease |
-| Epochs | <!-- isi jumlah epoch --> |
+| Epochs | 100 |
 | Model Variant | YOLOv11s (Small) |
 
 ---
 
-## 🔬 Detail RAG Pipeline
+## Detail RAG Pipeline
 
 ### Knowledge Base
 
@@ -110,7 +110,7 @@ LLM             : Groq — gpt-oss-20b
 
 ---
 
-## 🛠️ Teknologi yang Digunakan
+## Teknologi yang Digunakan
 
 ```
 Computer Vision  : YOLOv11 (Ultralytics), OpenCV
@@ -124,7 +124,7 @@ Deployment       : Docker, docker-compose
 
 ---
 
-## 🚀 Cara Menjalankan
+## Cara Menjalankan
 
 ### Prasyarat
 
@@ -167,7 +167,7 @@ python ingest.py
 
 ---
 
-## 📁 Struktur Proyek
+## Struktur Proyek
 
 ```
 chilicare-ai/
@@ -196,7 +196,7 @@ chilicare-ai/
 
 ---
 
-## 🖼️ Screenshot Aplikasi
+## Screenshot Aplikasi
 
 <!-- 📸 [IMAGE: Screenshot halaman "Deteksi Penyakit" — tampilkan contoh gambar daun yang sudah ter-annotate dengan bounding box YOLO + teks diagnosis di bawahnya] -->
 
@@ -204,7 +204,7 @@ chilicare-ai/
 
 ---
 
-## ⚠️ Limitasi & Pengembangan Selanjutnya
+## Limitasi & Pengembangan Selanjutnya
 
 **Limitasi saat ini:**
 - Model dilatih pada dataset terbatas; performa bisa menurun pada kondisi pencahayaan ekstrem
@@ -219,7 +219,7 @@ chilicare-ai/
 
 ---
 
-## 👤 Author
+## Author
 
 **Feri Mauliandi**
 Computer Engineering Student — Universitas Syiah Kuala

@@ -99,14 +99,10 @@ async def ask_expert(request: QuestionRequest):
     try:
         rag_chain = create_rag_chain()
         
-        # Buat fungsi generator untuk memecah respons menjadi potongan (chunks)
         def generate_response():
-            # rag_chain.stream() menggantikan rag_chain.invoke()
             for chunk in rag_chain.stream(request.question):
-                # yield mengirimkan potongan teks ke klien saat itu juga
                 yield chunk 
                 
-        # Kembalikan StreamingResponse, bukan dictionary JSON
         return StreamingResponse(
             generate_response(), 
             media_type="text/event-stream"
