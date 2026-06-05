@@ -10,7 +10,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-Backend-teal?logo=fastapi)](https://fastapi.tiangolo.com)
 [![Docker](https://img.shields.io/badge/Docker-Containerized-blue?logo=docker)](https://docker.com)
 
-<!-- 📸 [IMAGE: Demo GIF / screenshot aplikasi — tampilkan halaman deteksi penyakit sebelah kiri dan chatbot sebelah kanan, format GIF lebih direkomendasikan] -->
+![Screenshot Aplikasi](./assets/chilicare.jpg)
 
 </div>
 
