@@ -38,11 +38,11 @@ def read_root():
 
 @app.post("/detect")
 async def detect_disease(file: UploadFile = File(...)):
+    if not file.content_type or not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="File yang diunggah harus berupa gambar.")
+
     if not model:
         raise HTTPException(status_code=500, detail="Model YOLO belum siap atau tidak ditemukan.")
-
-    if not file.content_type.startswith("image/"):
-        raise HTTPException(status_code=400, detail="File yang diunggah harus berupa gambar.")
 
     try:
         contents = await file.read()

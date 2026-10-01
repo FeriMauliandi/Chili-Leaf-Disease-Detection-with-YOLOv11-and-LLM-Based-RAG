@@ -14,7 +14,8 @@ def test_read_root():
     assert response.status_code == 200
     assert "ChiliCare API" in response.json()["message"]
 
-def test_detect_disease_invalid_file_type():
+@patch("backend.api.model")
+def test_detect_disease_invalid_file_type(mock_model):
     """Test /detect rejects non-image file uploads with 400 Bad Request."""
     files = {"file": ("test.txt", b"dummy content", "text/plain")}
     response = client.post("/detect", files=files)
