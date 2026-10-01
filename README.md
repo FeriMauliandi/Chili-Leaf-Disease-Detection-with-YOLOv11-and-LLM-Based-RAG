@@ -69,8 +69,14 @@ pytest -v
 ```
 
 ### CI/CD Pipeline (.github/workflows/ci.yml)
-Setiap kali ada `push` atau `pull request` ke *branch* `main` atau `master`, GitHub Actions akan menjalankan:
-1. **Linting Kode**: Memeriksa kualitas kode dengan `ruff`.
-2. **Unit Testing**: Menjalankan seluruh pengujian unit di direktori `tests/` dan mengukur cakupan kode (*code coverage*).
-3. **Docker Build Verification**: Memastikan `Dockerfile` dapat di-build dengan sukses tanpa kesalahan dependensi.
+Setiap kali ada `push` atau `pull request` ke *branch* `main` atau `master`, GitHub Actions akan menjalankan **CI/CD Pipeline** otomatis:
+
+#### 1. Continuous Integration (CI)
+* **Linting Kode**: Memeriksa kualitas kode dengan `ruff`.
+* **Unit Testing**: Menjalankan seluruh pengujian unit di direktori `tests/` dan mengukur cakupan kode (*code coverage*).
+* **Docker Build Verification**: Memastikan `Dockerfile` dapat di-build dengan sukses tanpa kesalahan dependensi.
+
+#### 2. Continuous Deployment (CD)
+* **Publish Docker Image ke GHCR**: Otomatis mem-build dan me-release image Docker produksi ke **GitHub Container Registry (GHCR)** (`ghcr.io/FeriMauliandi/chilicare-app:latest`).
+* **Deploy ke Hugging Face Space**: Otomatis men-deploy dan me-refresh aplikasi ke **Hugging Face Space** (`feryms/chilicareAI`) secara otomatis saat terdapat perubahan pada branch `main`.
 
