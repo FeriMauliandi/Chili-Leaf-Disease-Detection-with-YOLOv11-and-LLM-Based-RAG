@@ -86,18 +86,17 @@ elif menu == "🤖 Chatbot (Teks)":
         with st.chat_message("assistant"):
             with st.spinner("Berpikir dan mencari referensi..."):
                 try:
-                    # KITA KIRIM REQUEST KE FASTAPI (Bukan panggil chain lokal)
+                    # KITA KIRIM REQUEST KE FASTAPI DENGAN STREAMING
                     payload = {"question": prompt}
-                    response = requests.post(API_ASK_URL, json=payload)
+                    response = requests.post(API_ASK_URL, json=payload, stream=True)
                     
                     if response.status_code == 200:
-                        data = response.json()
-                        jawaban = data["answer"]
+                        def generate_chunks():
+                            for chunk in response.iter_content(chunk_size=None, decode_unicode=True):
+                                if chunk:
+                                    yield chunk
                         
-                        # Tampilkan jawaban dari FastAPI/LLM
-                        st.markdown(jawaban)
-                        
-                        # Simpan jawaban ke memori
+                        jawaban = st.write_stream(generate_chunks())
                         st.session_state.messages.append({"role": "assistant", "content": jawaban})
                     else:
                         error_msg = f"Gagal mendapatkan jawaban. Error: {response.status_code}"
@@ -120,10 +119,11 @@ st.sidebar.markdown("""
     **2. Retrieval-Augmented Generation (RAG)**
     * Vector Database: `ChromaDB`
     * Embedding: `Qwen3-Embedding-0.6B`
+    * Re-ranker: `BAAI/bge-reranker-base`
     
     **3. Large Language Model (LLM)**
-    * Model: `Nvidia Nemotron-3 120B`
-    * Provider: `OpenRouter`
+    * Model: `OpenAI / GPT-OSS-20B`
+    * Provider: `Groq Cloud API`
     """)
 
 st.sidebar.markdown("---")

@@ -1,9 +1,11 @@
-const API_DETECT_URL = "http://localhost:8000/detect";
-const API_ASK_URL = "http://localhost:8000/ask";
+// const API_DETECT_URL = "http://localhost:8000/detect";
+// const API_ASK_URL = "http://localhost:8000/ask";
 
 // const API_DETECT_URL = "https://r7sc5m17-8000.asse.devtunnels.ms/detect";
 // const API_ASK_URL = "https://r7sc5m17-8000.asse.devtunnels.ms/ask";
 
+const API_DETECT_URL = "https://feryms-chilicareai.hf.space/detect";
+const API_ASK_URL = "https://feryms-chilicareai.hf.space/ask";
 
 let selectedFile = null;
 

@@ -23,3 +23,6 @@ chromadb
 pypdf
 streamlit
 python-dotenv
+pytest
+pytest-cov
+httpx

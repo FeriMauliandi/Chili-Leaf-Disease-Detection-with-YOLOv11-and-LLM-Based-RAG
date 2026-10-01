@@ -57,3 +57,20 @@ docker build -t chilicare-app .
 
 # Jalankan container
 docker run -p 8501:8501 chilicare-app
+```
+
+## 🧪 Testing & CI/CD
+
+Proyek ini telah dilengkapi dengan pengujian otomatis (*Unit Testing*) menggunakan `pytest` dan alur kerja CI/CD menggunakan **GitHub Actions**.
+
+### Menjalankan Unit Test Lokal
+```bash
+pytest -v
+```
+
+### CI/CD Pipeline (.github/workflows/ci.yml)
+Setiap kali ada `push` atau `pull request` ke *branch* `main` atau `master`, GitHub Actions akan menjalankan:
+1. **Linting Kode**: Memeriksa kualitas kode dengan `ruff`.
+2. **Unit Testing**: Menjalankan seluruh pengujian unit di direktori `tests/` dan mengukur cakupan kode (*code coverage*).
+3. **Docker Build Verification**: Memastikan `Dockerfile` dapat di-build dengan sukses tanpa kesalahan dependensi.
+
